@@ -11,16 +11,20 @@ class StreamShow extends React.Component {
     this.props.fetchStream(id);
     this.buildPlayer();
   }
+
   componentDidUpdate() { // when it gets re rendered at some point in the future.
     this.buildPlayer()
   }
 
-  buildPlayer = () => {
-    const {id} = this.props.match.params;
+  componentWillUnmount() {
+    this.player.destroy();
+  }
 
+  buildPlayer = () => {
     if(this.player || !this.props.stream) {
       return;
     }
+    const {id} = this.props.match.params;
 
     this.player = flv.createPlayer({
       type: 'flv',
@@ -31,7 +35,12 @@ class StreamShow extends React.Component {
   }
 
   render() {
+    if(!this.props.stream) {
+      return <div>loading</div>
+    }
+    
     const { title, description } = this.props.stream;
+
     return (
       <div>
         <video ref={this.videoRef} style={{width: '100%'}} controls></video>
